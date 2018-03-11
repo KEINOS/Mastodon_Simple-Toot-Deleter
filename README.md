@@ -6,9 +6,9 @@
 
 1. Go to your Mastodon account settings and create an access_token.
 1. Create a new PHP file.
-1. Copy the source.
-1. Edit the user settings such as host name and access_token.
-1. Don't forget to `chmod` executable. (ex `$ chmod 0755 yourfile.php`)
+1. Copy [the source](https://github.com/KEINOS/Mastodon_Simple-Toot-Deleter/blob/master/index.php).
+1. Edit the user settings such as the "host" name and the "access_token".
+1. Don't forget to `chmod` the script file as executable. (ex: `$ chmod 0755 yourfile.php`)
 1. Run the script and wait until it's done.
 
 ## How do I get the access token?
