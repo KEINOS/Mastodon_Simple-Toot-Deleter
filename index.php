@@ -46,11 +46,7 @@ while ($statuses_left > 0) {
         toot_delete($option);
 
         ++$count;
-
-        sleep($sleep_time);
     }
-
-    sleep($sleep_time);
 }
 
 echo PHP_EOL;
@@ -62,6 +58,8 @@ die;
 
 function curl_toot(array $option)
 {
+    sleep($sleep_time);
+
     $schema       = $option['schema'];
     $host         = $option['host'];
     $access_token = $option['access_token'];
@@ -76,7 +74,6 @@ function curl_toot(array $option)
 
     if ($result_json = `$command`) {
         $array_result = json_decode($result_json, JSON_OBJECT_AS_ARRAY);
-
         return $array_result;
     } else {
         $msg_error = 'Failed while requesting API.';
