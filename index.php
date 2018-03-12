@@ -25,8 +25,8 @@ $option = [
 
 /* Main ------------------------------------------------------------- */
 
-$statuses_max = $statuses_left = fetch_statuses_count($option);
-$option['id_account']          = fetch_account_id($option);
+$statuses_max         = $statuses_left = fetch_statuses_count($option);
+$option['id_account'] = fetch_account_id($option);
 
 while ($statuses_left > 0) {
     $statuses_left = fetch_statuses_count($option);
