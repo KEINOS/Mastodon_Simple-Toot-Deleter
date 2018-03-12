@@ -36,12 +36,12 @@ Since there's an access time limitation to use the API and if you request more t
 ## Running the script in background
 
 ```
-$ # Check the current PPID to compare
+$ # Check the current PID to compare
 $ ps
 $ # Run the script in background
 $ nohup php ./yourfile.php &
 $ # Press Ctrl+c to exit
-$ # Recheck the PPID to see if the script is running
+$ # Recheck the PID to see if the script is running
 $ ps
 $ # See the progress to check
 $ tail -f nohup.out
