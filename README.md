@@ -11,6 +11,7 @@
 1. Don't forget to `chmod` the script file as executable. (ex: `$ chmod 0755 yourfile.php`)
 1. Run the script and wait until it's done.
 
+
 ## How do I get the access token?
 
 1. Open your Mastodon account settings.
