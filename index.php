@@ -30,12 +30,10 @@ $option['id_account']          = fetch_account_id($option);
 
 while ($statuses_left > 0) {
     $statuses_left = fetch_statuses_count($option);
-
-    $toots = fetch_20toots($option);
-    $count = 0;
+    $toots         = fetch_20toots($option);
 
     foreach ($toots as $toot) {
-        $statuses_left = $statuses_left - $count;
+
         $progress      = round(($statuses_left / $statuses_max)*100, 2);
 
         echo "Deleting toot ... ";
@@ -46,7 +44,7 @@ while ($statuses_left > 0) {
 
         delete_toot($option);
 
-        ++$count;
+        $statuses_left--;
     }
 }
 
@@ -140,7 +138,7 @@ function fetch_statuses_count(array $option)
         echo_error($array_result, $msg_error);
     }
 
-    return $array_result['statuses_count'];
+    return (integer) $array_result['statuses_count'];
 }
 
 function delete_toot(array $option)
