@@ -33,17 +33,14 @@ while ($statuses_left > 0) {
     $toots         = fetch_20toots($option);
 
     foreach ($toots as $toot) {
-
-        $progress      = round(($statuses_left / $statuses_max)*100, 2);
+        $progress = round(($statuses_left / $statuses_max)*100, 2);
 
         echo "Deleting toot ... ";
         echo "${statuses_left}/${statuses_max} (${progress}% Left).";
         echo "\r";
 
         $option['id_toot'] = $toot['id'];
-
         delete_toot($option);
-
         $statuses_left--;
     }
 }
