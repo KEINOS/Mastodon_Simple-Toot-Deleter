@@ -28,7 +28,7 @@ $option = [
 $statuses_max         = $statuses_left = fetch_statuses_count($option);
 $option['id_account'] = fetch_account_id($option);
 
-while ($statuses_left > 0) {
+while (0 < $statuses_left) {
     $statuses_left = fetch_statuses_count($option);
     $toots         = fetch_20toots($option);
 
