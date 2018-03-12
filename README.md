@@ -32,3 +32,18 @@ This script deletes 1 toot/second because of the access limitation.
 Since there's an access time limitation to use the API and if you request more than 300 authorized requests in 5 minutes ( 1 authorized request per second) you'll get a "Too many request" error. Therefore this script is slow.
 
 - [See the current limit threshold](https://github.com/tootsuite/mastodon/blob/921b78190912b3cd74cea62fc3e773c56e8f609e/config/initializers/rack_attack.rb#L48-L50).
+
+## Running the script in background
+
+```
+$ # Check the current PPID to compare
+$ ps
+$ # Run the script in background
+$ nohup php ./yourfile.php &
+$ # Press Ctrl+c to exit
+$ # Recheck the PPID to see if the script is running
+$ ps
+$ # See the progress to check
+$ tail -f nohup.out
+```
+
