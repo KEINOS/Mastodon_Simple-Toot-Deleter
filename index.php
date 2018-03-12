@@ -15,18 +15,18 @@ $option = [
     'endpoint'     => '',
     'http_method'  => '',
     'id_account'   => '',
+    'time_sleep'   => 1, //sec (^1)
 ];
+
+// (^1)
+// Authorized API request must be less than 300 in 5min.
+// ∴ Request limit 1 request/sec
+// https://github.com/tootsuite/mastodon/blob/921b78190912b3cd74cea62fc3e773c56e8f609e/config/initializers/rack_attack.rb#L48-L50
 
 /* Main ------------------------------------------------------------- */
 
 $statuses_max = $statuses_left = fetch_statuses_count($option);
 $option['id_account']          = fetch_account_id($option);
-
-// Authorized API request must be less than 300 in 5min.
-// ∴ Request limit 1 request/sec
-// https://github.com/tootsuite/mastodon/blob/921b78190912b3cd74cea62fc3e773c56e8f609e/config/initializers/rack_attack.rb#L48-L50
-$sleep_time = 1; //sec
-
 
 while ($statuses_left > 0) {
     $statuses_left = fetch_statuses_count($option);
@@ -35,7 +35,6 @@ while ($statuses_left > 0) {
     $count = 0;
 
     foreach ($toots as $toot) {
-        $option['id_toot'] = $toot['id'];
         $statuses_left = $statuses_left - $count;
         $progress      = round(($statuses_left / $statuses_max)*100, 2);
 
@@ -43,7 +42,9 @@ while ($statuses_left > 0) {
         echo "${statuses_left}/${statuses_max} (${progress}% Left).";
         echo "\r";
 
-        toot_delete($option);
+        $option['id_toot'] = $toot['id'];
+
+        delete_toot($option);
 
         ++$count;
     }
@@ -58,13 +59,13 @@ die;
 
 function curl_toot(array $option)
 {
-    sleep($sleep_time);
-
     $schema       = $option['schema'];
     $host         = $option['host'];
     $access_token = $option['access_token'];
     $endpoint     = $option['endpoint'];
     $HTTP_method  = $option['http_method'];
+
+    sleep($option['time_sleep']);
 
     $query   = '';
     $query  .= " --header 'Authorization: Bearer ${access_token}'";
@@ -142,7 +143,7 @@ function fetch_statuses_count(array $option)
     return $array_result['statuses_count'];
 }
 
-function toot_delete(array $option)
+function delete_toot(array $option)
 {
     $id_toot               = $option['id_toot'];
     $option['endpoint']    = "/api/v1/statuses/${id_toot}";
