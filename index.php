@@ -69,8 +69,8 @@ function curl_api(array $option)
     $command = "curl -X ${HTTP_method}${query}";
 
     if ($result_json = `$command`) {
-        $array_result = json_decode($result_json, JSON_OBJECT_AS_ARRAY);
-        return $array_result;
+        $result_array = json_decode($result_json, JSON_OBJECT_AS_ARRAY);
+        return $result_array;
     } else {
         $msg_error = 'Failed while requesting API.';
         echo_error($command, $msg_error);
@@ -113,14 +113,14 @@ function fetch_account_id(array $option)
     $option['endpoint']    = '/api/v1/accounts/verify_credentials';
     $option['http_method'] = 'GET';
 
-    $array_result = curl_api($option);
+    $result_array = curl_api($option);
 
-    if (! isset($array_result['id'])) {
+    if (! isset($result_array['id'])) {
         $msg_error = 'Can not fetch account ID.';
-        echo_error($array_result, $msg_error);
+        echo_error($result_array, $msg_error);
     }
 
-    return  $array_result['id'];
+    return  $result_array['id'];
 }
 
 function fetch_statuses_count(array $option)
@@ -128,14 +128,14 @@ function fetch_statuses_count(array $option)
     $option['endpoint']    = '/api/v1/accounts/verify_credentials';
     $option['http_method'] = 'GET';
 
-    $array_result = curl_api($option);
+    $result_array = curl_api($option);
 
-    if (! isset($array_result['statuses_count'])) {
+    if (! isset($result_array['statuses_count'])) {
         $msg_error = 'Can not fetch \'statues_count\'.';
-        echo_error($array_result, $msg_error);
+        echo_error($result_array, $msg_error);
     }
 
-    return (integer) $array_result['statuses_count'];
+    return (integer) $result_array['statuses_count'];
 }
 
 function delete_toot(array $option)
