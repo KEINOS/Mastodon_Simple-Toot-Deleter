@@ -47,3 +47,16 @@ $ # See the progress to check
 $ tail -f nohup.out
 ```
 
+## Operation environment tested
+
+|Topic|Content|
+|:---|:---|
+|Confirmation date|2018/03/12|
+|Mastodon|v2.1.0|
+|OS|macOS High Sierra（OSX 10.13.3）|
+|Machine| MacBookPro（Retina, 13-inch, Early 2015）|
+|`$ php -v`|PHP 7.1.8 (cli) (built: Aug  7 2017 15:02:45) ( NTS )<br>Copyright (c) 1997-2017 The PHP Group<br>Zend Engine v3.1.0, Copyright (c) 1998-2017 Zend Technologies|
+|`$ bash --version`|GNU bash, version 3.2.57(1)-release (x86_64-apple-darwin17)<br>Copyright (C) 2007 Free Software Foundation, Inc.|
+|`$ curl --version`|curl 7.54.0 (x86_64-apple-darwin17.0) libcurl/7.54.0 LibreSSL/2.0.20 zlib/1.2.11 nghttp2/1.24.0<br>Protocols: dict file ftp ftps gopher http https imap imaps ldap ldaps pop3 pop3s rtsp smb smbs smtp smtps telnet tftp<br>Features: AsynchDNS IPv6 Largefile GSS-API Kerberos SPNEGO NTLM NTLM_WB SSL libz HTTP2 UnixSockets HTTPS-proxy |
+
+
