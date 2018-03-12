@@ -52,7 +52,7 @@ die;
 
 /* Functions (alphabetical order) ----------------------------------- */
 
-function curl_toot(array $option)
+function curl_api(array $option)
 {
     $schema       = $option['schema'];
     $host         = $option['host'];
@@ -100,7 +100,7 @@ function fetch_20toots(array $option)
     $option['endpoint']    = "/api/v1/accounts/${id_account}/statuses";
     $option['http_method'] = 'GET';
 
-    return  curl_toot($option);
+    return  curl_api($option);
 }
 
 
@@ -113,7 +113,7 @@ function fetch_account_id(array $option)
     $option['endpoint']    = '/api/v1/accounts/verify_credentials';
     $option['http_method'] = 'GET';
 
-    $array_result = curl_toot($option);
+    $array_result = curl_api($option);
 
     if (! isset($array_result['id'])) {
         $msg_error = 'Can not fetch account ID.';
@@ -128,7 +128,7 @@ function fetch_statuses_count(array $option)
     $option['endpoint']    = '/api/v1/accounts/verify_credentials';
     $option['http_method'] = 'GET';
 
-    $array_result = curl_toot($option);
+    $array_result = curl_api($option);
 
     if (! isset($array_result['statuses_count'])) {
         $msg_error = 'Can not fetch \'statues_count\'.';
@@ -144,5 +144,5 @@ function delete_toot(array $option)
     $option['endpoint']    = "/api/v1/statuses/${id_toot}";
     $option['http_method'] = 'DELETE';
 
-    return ($result = curl_toot($option));
+    return ($result = curl_api($option));
 }
