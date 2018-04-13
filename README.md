@@ -13,14 +13,14 @@
     `$ php delete_toot.php`
 
 1. Then edit the JSON file and change the values below.
-    - scheme        -> ex. https
-    - host          -> ex. qiitadon.com
-    - access_token  -> Get it from your instance's settings.
+    - `scheme`        -> ex. https
+    - `host`          -> ex. qiitadon.com
+    - `access_token`  -> Get it from your instance's settings.
 
     Optional:
-    - id_skip    -> Set toot IDs to skip deleteing.
-    - time_sleep -> Must be more than 1. The bigger the slower.
-    - id_account -> Leave it blank then the script'll auto fill.
+    - `id_skip`    -> Set toot IDs to skip deleteing.
+    - `time_sleep` -> Must be more than 1. The bigger the slower.
+    - `id_account` -> Leave it blank then the script'll auto fill.
 1. Run the script again and wait until it's done.
 
     Note1 : To **run it background** see below.
