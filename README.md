@@ -9,7 +9,9 @@
 1. Copy and paste [the source](https://github.com/KEINOS/Mastodon_Simple-Toot-Deleter/blob/master/index.php).
 1. Don't forget to `chmod` the script file as executable. (ex: `$ chmod 0755 delete_toot.php`)
 1. Run the script once and it will create a JSON file for user settings.
+
     `$ php delete_toot.php`
+
 1. Then edit the JSON file and change the values below.
     - scheme        -> ex. https
     - host          -> ex. qiitadon.com
