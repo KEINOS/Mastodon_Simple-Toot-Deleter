@@ -23,10 +23,7 @@
     - `id_account` -> Leave it blank then the script'll auto fill.
 1. Run the script again and wait until it's done.
 
-    Note1 : To **run it background** see below.
-    1. Run as `$ nohup php ./delete_toot.php &`
-    2. Then precc ^c (quit) the script.
-    3. Run `$ tail -f nohup.put` to see the progress
+    Note1 : To **run it background** [see below](#running-the-script-in-background).
     Note2 : Don't forget to delete 'nohup.out' file after finish.
 
 
