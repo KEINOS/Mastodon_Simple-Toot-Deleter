@@ -195,24 +195,28 @@ function curl_api(array &$option)
     //$result_json = `$command 2>&1`;
 
     $steam_context = stream_context_create($context);
-    $result_json  = file_get_contents($url, false, $steam_context);
+    $is_return_error = ( $result_json  = file_get_contents($url, false, $steam_context) ) ? false : true;
+
     $result_array = json_decode(trim($result_json), JSON_OBJECT_AS_ARRAY);
     $option['http_response_header'] = $http_response_header;
 
-    if (!$result_json) {
-        if (ping($host_ip)) {
-            echo "Error: Fail while requesting cURL." . PHP_EOL;
-            if(! is_too_many_requests($option) ){
-                print_r($result_json);
-                print_r($http_response_header);                
-            }
-        } else {
-            $msg_error = 'Host is down ...';
-            echo_same_line($msg_error);
-            ping_until_up($host_ip);
-        }
-        return array();
+    if (! $is_return_error) {
+        return $result_array;
     }
+
+    if (ping($host_ip)) {
+        echo "Error: Fail while requesting cURL." . PHP_EOL;
+        if (! is_too_many_requests($option)) {
+            print_r($result_json);
+            print_r($http_response_header);
+        }
+    } else {
+        $msg_error = 'Host is down ...';
+        echo_same_line($msg_error);
+        ping_until_up($host_ip);
+    }
+
+    return array();
 }
 
 function delete_toot(array &$option)
@@ -467,9 +471,12 @@ function fetch_statuses_count(array $option)
 
     $array_result = curl_api($option);
 
+    if (! is_too_many_requests($option)) {
+        die_error($array_result, $msg_error);
+    }
+
     if (! isset($array_result['statuses_count'])) {
         $msg_error = 'Can not fetch \'statues_count\'.';
-        die_error($array_result, $msg_error);
     }
 
     return (integer) $array_result['statuses_count'];
@@ -567,7 +574,7 @@ function is_too_many_requests($option)
             return  true;
         }
     }
-    
+
     return (string) trim($header[0]);
 }
 
