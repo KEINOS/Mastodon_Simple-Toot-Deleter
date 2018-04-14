@@ -76,8 +76,7 @@ while (0 < $option['statuses_left']) {
     $option['statuses_left'] = $statuses_left;
 }
 
-echo PHP_EOL;
-echo 'All done.' . PHP_EOL;
+echo_eol('All done.');
 
 die;
 
@@ -152,7 +151,6 @@ function check_option_requirement($option)
     }
 
     if (! empty($msg_error)) {
-        $msg_error  = PHP_EOL;
         $msg_error .= 'Please check the JSON file.' . PHP_EOL . $msg_error;
         die_error($msg_error, 'Empty setting on JSON file.');
     }
@@ -206,8 +204,7 @@ function curl_api(array &$option)
     }
 
     if (ping($host_ip)) {
-        echo PHP_EOL;
-        echo "Error: Fail while requesting cURL." . PHP_EOL;
+        echo_eol("Error: Fail while requesting cURL.");
         if (! is_too_many_requests($option)) {
             print_r($result_json);
             print_r($http_response_header);
@@ -226,8 +223,7 @@ function delete_toot(array &$option)
     $id_toot = $option['id_toot'];
 
     if (is_id_skip($option)) {
-        echo PHP_EOL;
-        echo "Toot in 'is_skip' found. Skipping toot ID ${id_toot}" . PHP_EOL;
+        echo_eol("Toot in 'is_skip' found. Skipping toot ID ${id_toot}");
         return null;
     }
 
@@ -264,8 +260,7 @@ function delete_toots(string $path_file_toots, $option)
                 echo_same_line($msg);
                 sleep(1);
             } else {
-                echo PHP_EOL;
-                echo 'Error: Unknown responce' . PHP_EOL;
+                echo_eol('Error: Unknown responce');
                 print_r($result);
                 ping_until_up($option['host_ip']);
             }
@@ -300,8 +295,7 @@ function die_error($mix, $message = '')
 function die_ok($mix, $message = '')
 {
     $msg_success = die_msg('ok', $mix, $message);
-    echo PHP_EOL;
-    echo $msg_success . PHP_EOL;
+    echo_eol($msg_success);
     exit(0);
 }
 
