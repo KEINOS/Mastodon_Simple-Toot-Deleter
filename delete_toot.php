@@ -305,6 +305,11 @@ function die_ok($mix, $message = '')
     exit(0);
 }
 
+function echo_eol($string)
+{
+    echo PHP_EOL, $string, PHP_EOL;
+}
+
 function echo_same_line($string)
 {
     $string       = trim($string);
