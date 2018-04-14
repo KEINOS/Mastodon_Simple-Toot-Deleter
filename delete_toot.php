@@ -4,22 +4,23 @@
  * ---------------------------------------------------------------------
  *
  *   1. Run this script once as below and it'll create a JSON file.
- *        `$ php delete_toot.php`
+ *       `$ php delete_toot.php`
  *   2. Then edit the JSON file and change the values below.
- *        - scheme        -> ex. https
- *        - host          -> ex. qiitadon.com
- *        - access_token  -> Get it from your instance's settings.
+ *       - scheme        -> ex. https
+ *       - host          -> ex. qiitadon.com
+ *       - access_token  -> Get it from your instance's settings.
  *
- *        Optional:
- *          - id_skip    -> Set toot IDs to skip deleteing.
- *          - time_sleep -> Must be more than 1. The bigger the slower.
- *          - id_account -> Leave it blank then the script'll auto fill.
+ *       Optional:
+ *           - id_skip    -> Set toot IDs to skip deleteing.
+ *           - time_sleep -> Must be more than 1. The bigger the slower.
+ *           - id_account -> Leave it blank then it'll auto fill.
  *   3. Run the script again.
- *        Note1 : To run it background see below.
- *          1. Run as `$ nohup php ./delete_toot.php &`
- *          2. Then precc ^c (quit) the script.
- *          3. Run `$ tail -f nohup.put` to see the progress
- *        Note2 : Don't forget to delete 'nohup.out' file after finish.
+ *
+ *      Note1 : To run it background see below.
+ *        1. Run as `$ nohup php ./delete_toot.php &`
+ *        2. Then precc ^c (quit) the script.
+ *        3. Run `$ tail -f nohup.put` to see the progress
+ *      Note2 : Don't forget to delete 'nohup.out' file after finish.
  */
 
 /* Constants (alphabetical order) ----------------------------------- */
@@ -29,6 +30,9 @@ define('PATH_DIR_CURRENT', realpath('./'));
 const DIR_SEP          = DIRECTORY_SEPARATOR;
 const NAME_FILE_OPTION = 'delete_toot.json';
 const PATH_FILE_OPTION = PATH_DIR_CURRENT . DIR_SEP . NAME_FILE_OPTION;
+
+//Minutes to cool down when too many request error from the server
+const RELESE_TIME_TOO_MANY_REQUESTS = 5;
 
 /* API Request Options ---------------------------------------------- */
 
@@ -40,7 +44,7 @@ $option_default = [
         '',
         '',
     ],
-    'time_sleep'   => 1, //sec (^1)
+    'time_sleep'   =>  1, // (^1)
     'id_account'   => '',
 ];
 
@@ -191,18 +195,17 @@ function curl_api(array &$option)
     //$result_json = `$command 2>&1`;
 
     $steam_context = stream_context_create($context);
+    $result_json  = file_get_contents($url, false, $steam_context);
+    $result_array = json_decode(trim($result_json), JSON_OBJECT_AS_ARRAY);
+    $option['http_response_header'] = $http_response_header;
 
-    if ($result_json = file_get_contents($url, false, $steam_context)) {
-        $result_array = json_decode(trim($result_json), JSON_OBJECT_AS_ARRAY);
-        $option['http_response_header'] = $http_response_header;
-
-        return $result_array;
-    } else {
+    if (!$result_json) {
         if (ping($host_ip)) {
             echo "Error: Fail while requesting cURL." . PHP_EOL;
-            print_r($result_json);
-            print_r($http_response_header);
-            sleep(1);
+            if(! is_too_many_requests($option) ){
+                print_r($result_json);
+                print_r($http_response_header);                
+            }
         } else {
             $msg_error = 'Host is down ...';
             echo_same_line($msg_error);
@@ -214,7 +217,13 @@ function curl_api(array &$option)
 
 function delete_toot(array &$option)
 {
-    $id_toot               = $option['id_toot'];
+    $id_toot = $option['id_toot'];
+
+    if (is_id_skip($option)) {
+        echo "Toot in 'is_skip' found. Skipping toot ID ${id_toot}" . PHP_EOL;
+        return null;
+    }
+
     $option['endpoint']    = "/api/v1/statuses/${id_toot}";
     $option['http_method'] = 'DELETE';
     $result                = curl_api($option);
@@ -355,7 +364,7 @@ function fetch_id_next($option)
 
     foreach ($option['http_response_header'] as $header) {
         if (strpos($header, 'Link:') !== false) {
-            $url = trim(explode('>', $header)[0],'Link: <');
+            $url = trim(explode('>', $header)[0], 'Link: <');
             parse_str(parse_url($url, PHP_URL_QUERY), $query);
             return $query['max_id'];
         }
@@ -528,6 +537,38 @@ function initialize_option($option_default)
 function is_cli()
 {
     return PHP_SAPI === 'cli' || empty($_SERVER['REMOTE_ADDR']);
+}
+
+function is_id_skip($option)
+{
+    $target_id_toot = $option['id_toot'];
+    $skip_id_list   = $option['id_skip'];
+    $flipped        = array_flip($skip_id_list);
+
+    return array_key_exists($target_id_toot, $flipped);
+}
+
+function is_too_many_requests($option)
+{
+    if (! isset($option['http_response_header'])) {
+        return '';
+    }
+
+    foreach ($option['http_response_header'] as $header) {
+        if ('HTTP/1.1 429 Too Many Requests' === trim($header)) {
+            $count_down = RELESE_TIME_TOO_MANY_REQUESTS * 60;
+            $msg_error = 'The server/host sais \'Too many requests\'.';
+            while (0 < $count_down) {
+                $msg = "${msg_error} Cooling down ... ${count_down}";
+                echo_same_line($msg);
+                sleep(1);
+                --$count_down;
+            }
+            return  true;
+        }
+    }
+    
+    return (string) trim($header[0]);
 }
 
 function ping($host)
