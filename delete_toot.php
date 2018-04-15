@@ -54,7 +54,7 @@ $option_default = [
 // https://github.com/tootsuite/mastodon/blob/921b78190912b3cd74cea62fc3e773c56e8f609e/config/initializers/rack_attack.rb#L48-L50
 
 /* Main ------------------------------------------------------------- */
-
+echo_title();
 $option = initialize_option($option_default);
 
 // Create thread and call self recrucively.
@@ -62,6 +62,12 @@ while (0 < $option['statuses_left']) {
     // Fetch new toots
     echo_same_line('Fetching status and toots ...');
     $toots = fetch_100toots($option);
+    $count_toots = count($toots);
+    $count_skips = count($option['id_skip']);
+
+    if ($count_toots === $count_skips) {
+        break;
+    }
 
     // Create thread
     $size_chunk   = 20; //number of toots
@@ -76,8 +82,15 @@ while (0 < $option['statuses_left']) {
     $option['statuses_left'] = $statuses_left;
 }
 
-echo_eol('All done.');
+echo_same_line('All done.');
 
+if ($count_skips) {
+    echo_eol("You have ${count_skips} skipped toots left.");
+    echo_eol("Skipped toot ID:");
+    echo_array_as_list($option['id_skip']);
+}
+
+echo_hr();
 die;
 
 /* Functions (alphabetical order) ----------------------------------- */
@@ -94,20 +107,28 @@ function apply_account_id($option)
         die_error($array_result, $msg_error);
     }
 
-    $option['id_account'] = $array_result['id'];
+    $option['endpoint']    = '';
+    $option['http_method'] = '';
+    $option['host_ip']     = '';
 
-    unset($option['endpoint']);
-    unset($option['http_method']);
-    unset($option['host_ip']);
+    if (isset($array_result['id']) && ! empty($array_result['id'])) {
+        $option['id_account'] = $array_result['id'];
 
-    // Overwrite option file
-    return apply_option($option);
+        // Overwrite option file
+        return apply_option($option);
+    }
+
+    return $option;
 }
 
 function apply_json($path_file_json, $data_array)
 {
     $data_json = json_encode($data_array, JSON_PRETTY_PRINT);
-    return file_put_contents($path_file_json, $data_json);
+    if (file_put_contents($path_file_json, $data_json)) {
+        return fetch_json_as_array($path_file_json);
+    }
+
+    return false;
 }
 
 function apply_option($option_array)
@@ -153,6 +174,10 @@ function check_option_requirement($option)
     if (! empty($msg_error)) {
         $msg_error .= 'Please check the JSON file.' . PHP_EOL . $msg_error;
         die_error($msg_error, 'Empty setting on JSON file.');
+    }
+
+    if (! isset($option['id_account'])) {
+        $option['id_account'] = '';
     }
 
     $option['time_sleep'] = ($option['time_sleep'])?:1;
@@ -299,9 +324,37 @@ function die_ok($mix, $message = '')
     exit(0);
 }
 
+function echo_array_as_list($array)
+{
+    if(is_string($array)){
+        return "\t -${array}" . PHP_EOL;
+    }
+
+    $result = '';
+
+    foreach($array as $mix){
+        if(is_string($mix)){
+            $result .= "\t -${mix}". PHP_EOL;
+        }
+    }
+    
+    echo $result;
+}
+
 function echo_eol($string)
 {
     echo PHP_EOL, $string, PHP_EOL;
+}
+
+function echo_hr($string = '-', $return = false)
+{
+    $width = get_screen_width();
+    $hr    = str_repeat($string, $width);
+    if ($return) {
+        return $hr . PHP_EOL;
+    }
+
+    echo $hr . PHP_EOL;
 }
 
 function echo_same_line($string)
@@ -312,7 +365,23 @@ function echo_same_line($string)
     $line_string  = $string . $line_blank;
     $line_string  = substr($line_string, 0, $width_screen);
 
-    echo "\r${line_string}";
+    echo "\r", $line_string;
+}
+
+function echo_title($return = false)
+{
+    echo `clear`;
+
+    $result  = PHP_EOL;
+    $result .= echo_hr('=',true);
+    $result .=  "\tMastodon Toot Deleter" . PHP_EOL;
+    $result .= echo_hr('=',true);
+
+    if ($return) {
+        return $result;
+    }
+
+    echo $result;
 }
 
 function fetch_40toots(array &$option)
@@ -348,6 +417,10 @@ function fetch_100toots(array &$option)
         $result = array_unique($result);
         $count  = count($result);
         echo_same_line("Fetching ${count} toots ...");
+
+        if (empty($option['id_min'])) {
+            return $result;
+        }
     }
 
     return $result;
@@ -374,7 +447,12 @@ function fetch_id_next($option)
         if (strpos($header, 'Link:') !== false) {
             $url = trim(explode('>', $header)[0], 'Link: <');
             parse_str(parse_url($url, PHP_URL_QUERY), $query);
-            return $query['max_id'];
+            if (isset($query['max_id'])&&!empty($query['max_id'])) {
+                return $query['max_id'];
+            } else {
+                unset($query['max_id']);
+                return false;
+            }
         }
     }
 }
@@ -512,11 +590,12 @@ function get_screen_width()
 {
     $default_width = 70; //デフォルト幅
 
-    if (! is_cli()) {
-        return 'n/a';
-    }
-
     if (! defined('SCREEN_WIDTH')) {
+        if (! is_cli()) {
+            $msg = 'This script must be run via command line.';
+            die($msg);
+        }
+
         $width = trim(`tput cols`); //バッククォートであることに注意
         $width = is_numeric($width) ? $width : $default_width;
         define('SCREEN_WIDTH', $width);
