@@ -2,7 +2,15 @@
 
 [This simple PHP script](https://github.com/KEINOS/Mastodon_Simple-Toot-Deleter/blob/master/delete_toot.php) deletes **all** your toots from your Mastodon instance.
 
-## How to use
+## TL;DR
+
+[Copy the script](https://github.com/KEINOS/Mastodon_Simple-Toot-Deleter/blob/master/delete_toot.php), edit and fill out the [settings in the source code](https://github.com/KEINOS/Mastodon_Simple-Toot-Deleter/blob/master/delete_toot.php#L39-L49) and run.
+
+It worked on macOS and RaspbianOS.
+
+## TS;DR
+
+### How to use (Detail)
 
 1. Go to your Mastodon account settings and create an access_token.
 1. Create a new PHP file.  (ex: `delete_toot.php`)
@@ -27,7 +35,7 @@
     Note2 : Don't forget to delete 'nohup.out' file after finish.
 
 
-## How do I get the access token?
+### How do I get the access token?
 
 1. Open your Mastodon account settings.
 1. Go to "</> Development" setting and open "Your applications".
@@ -40,7 +48,7 @@
 
 Note: Don't forget to delete this application entry after use. (For sureness)
 
-## Why it's slow?
+### Why it's slow?
 
 This script deletes 1 toot/second by default because of the Mastodon's access limitation.
 
@@ -48,7 +56,7 @@ Since there's an access time limitation to use the API and if you request more t
 
 - [See the current limit threshold](https://github.com/tootsuite/mastodon/blob/921b78190912b3cd74cea62fc3e773c56e8f609e/config/initializers/rack_attack.rb#L48-L50).
 
-## Running the script in background
+### Running the script in background
 
 ```
 $ # Check the current PID to compare
