@@ -73,7 +73,7 @@ while (0 < $option['statuses_left']) {
     $size_chunk   = 20; //number of toots
     $thread_lists = apply_threads($toots, $size_chunk);
 
-    // Run thread
+    // Run_thread to delete toots in each thread_list
     foreach ($thread_lists as $thread_list) {
         run_thread($thread_list, $option);
     }
