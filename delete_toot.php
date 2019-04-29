@@ -18,8 +18,8 @@
  *
  *      Note1 : To run it background see below.
  *        1. Run as `$ nohup php ./delete_toot.php &`
- *        2. Then precc ^c (quit) the script.
- *        3. Run `$ tail -f nohup.out` to see the progress
+ *        2. Then press ^c the script to quit. (Don't worry)
+ *        3. Run `$ tail -f nohup.out` to see the background progress.
  *      Note2 : Don't forget to delete 'nohup.out' file after finish.
  */
 
